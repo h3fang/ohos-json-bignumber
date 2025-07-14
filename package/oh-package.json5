@@ -1,0 +1,10 @@
+{
+  "license": "MIT",
+  "author": "Fang He",
+  "name": "@ohos/json-bignumber",
+  "description": "",
+  "main": "index.ets",
+  "version": "1.0.0-rc.1",
+  "types": "libs/index.d.ts",
+  "dependencies": {}
+}
