@@ -1,0 +1,36 @@
+name: Build
+
+on:
+  push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup OpenHarmony SDK
+        uses: openharmony-rs/setup-ohos-sdk@v0.2
+        id: setup-ohos
+        with:
+          version: '5.1.0'
+
+      - name: Setup Rust environment
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          target: 'aarch64-unknown-linux-ohos,x86_64-unknown-linux-ohos'
+
+      - name: Install ohrs
+        run: cargo install ohrs --git https://github.com/ohos-rs/ohos-rs --rev 1b93eb14dc4b9c3aed5534d6814241b0aa429f98
+
+      - name: Build
+        run: ohrs build --release -a aarch -a x64
+
+      - name: Package artifact
+        run: ohrs artifact -n ohos-json-bignumber
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: ohos-json-bignumber.har
