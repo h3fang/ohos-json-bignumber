@@ -30,7 +30,8 @@ jobs:
       - name: Package artifact
         run: ohrs artifact -n ohos-json-bignumber
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref_type == 'tag'
         with:
-          path: ohos-json-bignumber.har
+          files: ohos-json-bignumber.har
