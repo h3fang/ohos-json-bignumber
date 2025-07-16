@@ -1,10 +1,11 @@
+use std::fmt::Write;
+
 use napi_derive_ohos::napi;
 use napi_ohos::bindgen_prelude::{FromNapiValue, JavaScriptClassExt};
 use napi_ohos::{
     Env, Error, JsBigInt, JsBoolean, JsNumber, JsObject, JsString, JsUnknown, NapiRaw, Result,
     Status, ValueType,
 };
-use std::fmt::Write;
 
 use crate::bignumber::BigNumber;
 
@@ -32,16 +33,12 @@ impl JsonStringifier {
 
     fn write_value(&mut self, output: &mut String, value: JsUnknown) -> Result<()> {
         match value.get_type()? {
-            ValueType::Undefined
-            | ValueType::Function
-            | ValueType::External
-            | ValueType::Unknown => self.write_null(output),
-            ValueType::Null => self.write_null(output),
-            ValueType::Boolean => self.write_boolean(output, unsafe { value.cast() }),
-            ValueType::Number => self.write_number(output, unsafe { value.cast() }),
             ValueType::String => self.write_string(output, unsafe { value.cast() }),
-            ValueType::Object => self.write_object(output, unsafe { value.cast() }),
             ValueType::BigInt => self.write_bigint(output, unsafe { value.cast() }),
+            ValueType::Object => self.write_object(output, unsafe { value.cast() }),
+            ValueType::Number => self.write_number(output, unsafe { value.cast() }),
+            ValueType::Boolean => self.write_boolean(output, unsafe { value.cast() }),
+            _ => self.write_null(output),
         }
     }
 
