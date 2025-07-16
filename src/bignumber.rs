@@ -1,9 +1,9 @@
 use std::fmt::Display;
 
 use bigdecimal::{BigDecimal, FromPrimitive, Num};
+use napi_derive_ohos::napi;
 use napi_ohos::bindgen_prelude::{Either3, Function, JavaScriptClassExt};
 use napi_ohos::{Env, Error, JsNumber, JsObject, JsUnknown, Result, Status};
-use napi_derive_ohos::napi;
 
 #[napi]
 #[derive(Debug, Clone)]

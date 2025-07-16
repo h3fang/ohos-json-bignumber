@@ -3,9 +3,9 @@ use std::{iter::Peekable, str::FromStr};
 
 use bigdecimal::num_bigint::Sign;
 use bigdecimal::{BigDecimal, Num};
+use napi_derive_ohos::napi;
 use napi_ohos::bindgen_prelude::ToNapiValue;
 use napi_ohos::{Env, Error, JsString, JsUnknown, NapiValue, Result, Status};
-use napi_derive_ohos::napi;
 
 use crate::bignumber::BigNumber;
 use crate::error::ParseError;
