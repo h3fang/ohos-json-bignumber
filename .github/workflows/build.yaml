@@ -32,6 +32,6 @@ jobs:
 
       - name: Release
         uses: softprops/action-gh-release@v2
-        if: github.ref_type == 'tag' && github.ref_name == 'main'
+        if: github.ref_type == 'tag'
         with:
           files: ohos-json-bignumber.har
