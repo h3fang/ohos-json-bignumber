@@ -116,16 +116,16 @@ impl JsonStringifier {
         let names = obj.get_property_names()?;
         let len = names.get_array_length_unchecked()?;
         for i in 0..len {
-            let key: JsString = names.get_element_unchecked(i)?;
-            let key = key.into_utf16()?.as_str()?;
             if i > 0 {
                 output.push(',');
             }
-            output.push('"');
-            output.push_str(&key);
-            output.push('"');
+
+            let key: JsString = names.get_element_unchecked(i)?;
+            self.write_string(output, key)?;
+
             output.push(':');
-            let value: JsUnknown = obj.get_named_property_unchecked(&key)?;
+
+            let value: JsUnknown = obj.get_property_unchecked(key)?;
             self.write_value(output, value)?;
         }
         output.push('}');
