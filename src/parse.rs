@@ -6,6 +6,7 @@ use bigdecimal::{BigDecimal, Num};
 use napi_derive_ohos::napi;
 use napi_ohos::bindgen_prelude::ToNapiValue;
 use napi_ohos::{Env, Error, JsString, JsUnknown, NapiValue, Result, Status};
+use widestring::Utf16String;
 
 use crate::bignumber::BigNumber;
 use crate::error::ParseError;
@@ -49,11 +50,7 @@ impl<'a> JsonParser<'a> {
             Some('n') => self.parse_null(),
             Some('t') => self.parse_true(),
             Some('f') => self.parse_false(),
-            Some('"') => {
-                let s = self.parse_string()?;
-                let s = self.to_js_string(s)?;
-                Ok(s.into_unknown())
-            }
+            Some('"') => self.parse_string().map(|s| s.into_unknown()),
             Some('[') => self.parse_array(),
             Some('{') => self.parse_object(),
             Some(c) if c.is_ascii_digit() || *c == '-' => self.parse_number(),
@@ -146,9 +143,9 @@ impl<'a> JsonParser<'a> {
         }
     }
 
-    fn parse_string(&mut self) -> Result<String> {
+    fn parse_string(&mut self) -> Result<JsString> {
         self.expect_char('"')?;
-        let mut s = String::new();
+        let mut s = Utf16String::new();
 
         loop {
             match self.chars.next() {
@@ -182,7 +179,7 @@ impl<'a> JsonParser<'a> {
                 None => return Err(ParseError::UnexpectedEndOfInput.into()),
             }
         }
-        Ok(s)
+        self.env.create_string_utf16(s.as_slice())
     }
 
     fn parse_array(&mut self) -> Result<JsUnknown> {
@@ -242,7 +239,7 @@ impl<'a> JsonParser<'a> {
 
             let value = self.parse_value()?;
 
-            obj.set_named_property(&key, value)?;
+            obj.set_property(key, value)?;
 
             self.skip_whitespace();
 
@@ -261,11 +258,6 @@ impl<'a> JsonParser<'a> {
         }
 
         Ok(obj.into_unknown())
-    }
-
-    #[inline]
-    fn to_js_string(&self, s: String) -> Result<JsString> {
-        self.env.create_string_from_std(s)
     }
 
     fn skip_whitespace(&mut self) {
